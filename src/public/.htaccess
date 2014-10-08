@@ -1,0 +1,8 @@
+Options +FollowSymLinks
+RewriteEngine On
+
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !^/favicon\.ico [NC]
+RewriteRule ^.*$ ./index.php
