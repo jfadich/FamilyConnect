@@ -35,7 +35,7 @@ Class Forum extends Model
         return $result;
     }
 
-    public function get_topics($id = '') // TODO add pagination
+    public function get_topics($id = '', $page = 1)
     {
         if ( is_numeric( $id ) )
             $searchColumn = "topic_cat";
@@ -51,8 +51,9 @@ Class Forum extends Model
         return $result;
     }
 
-    public function get_posts($topic_id)
+    public function get_posts($topic_id, $page = 1)
     {
+        $this->set_page( $page );
         if ( !empty( $topic_id ) ) {
             $result = $this->query( "SELECT * FROM $this->post_table WHERE post_topic = ? ", $topic_id );
         }

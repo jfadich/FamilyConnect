@@ -26,29 +26,23 @@ class ForumController
         $this->screen       = $screen;
 
         $this->forum = new Forum();
-        // If $args is empty, show root. List categories in sidebar, Show all topics
 
         if ( isset( $args[ 1 ] ) ) {
             $this->category = $this->forum->get_categories( $args[ 1 ] );
             if ( $this->category == false )
                 $this->screen->send_404();
 
-            else if ( isset( $args[ 2 ] ) ) {
+            if ( isset( $args[ 2 ] ) ) {
+
                 if ( isset( $args[ 3 ] ) && is_numeric( $args[ 3 ] ) )
                     $this->page = $args[ 3 ];
-                elseif ( is_numeric( $args[ 2 ] ) ) {
-                    $this->page = $args[ 2 ];
-                    $this->load_category();
-                }
-                else {
-                    $this->topic = $this->forum->get_topics( $args[ 2 ] )[ 0 ];
 
-                    if ( $this->topic == false )
-                        $this->screen->send_404();
-                    else {
-                        $this->list_posts();
-                    }
-                }
+                $this->topic = $this->forum->get_topics( $args[ 2 ] )[ 0 ];
+
+                if ( $this->topic == false )
+                    $this->screen->send_404();
+
+                $this->list_posts();
             }
             else {
                 $this->load_category();
@@ -114,7 +108,7 @@ class ForumController
         if ( $this->page == 1 ) // Show the original post on the first page
             $this->screen->add_fragment( "forum/topic", $this->topic );
 
-        $posts = $this->forum->get_posts( $this->topic[ "topic_id" ] );
+        $posts = $this->forum->get_posts( $this->topic[ "topic_id" ], $this->page );
 
         if ( $posts == false ) {
             $this->screen->add_fragment( "TEXT", "There doesn't seem to be anything here " );

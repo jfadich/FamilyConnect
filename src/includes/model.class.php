@@ -14,7 +14,7 @@ class Model
 
     private $paginate = false;
 
-    private $limit;
+    private $limit = 10;
 
     private $page = 1;
 
@@ -51,26 +51,7 @@ class Model
         $this->is_transaction = false;
     }
 
-    /**
-     * @param array $columns
-     * @param string $table
-     * @param string $condition
-     * @param string $limit
-     * @return array
-     */
-    protected function get_rows($columns, $table, $condition, $limit = '')
-    {
-        ( !empty( $limit ) ) && is_numeric( $limit ) ? $limit = "LIMIT $limit" : $limit = ''; // If the limit is provided and is numeric, prepend the SQL LIMIT command.
-
-        if ( is_array( $columns ) )
-            $columns = implode( ",", $columns );
-
-        $sql = "SELECT $columns FROM  $table WHERE $condition $limit"; // TODO fix parametrized query
-        print( $sql );
-        return $this->query( $sql );
-    }
-
-    protected function set_page($limit = 10, $page = 1)
+    protected function set_page($page = 1, $limit = 10)
     {
         $this->paginate = true;
         $this->page     = $page;
@@ -86,9 +67,15 @@ class Model
         // SQL statement
         $sql = func_get_arg( 0 );
 
+        $type = explode( " ", $sql )[ 0 ];
+
         // parameters, if any
         $parameters = array_slice( func_get_args(), 1 );
 
+        if ( $this->paginate ) {
+            $offset = ( $this->page - 1 ) * $this->limit;
+            $sql    = $sql . " LIMIT " . $offset . ", $this->limit";
+        }
 
         // prepare SQL statement
         $statement = $this->handle->prepare( $sql );
@@ -102,7 +89,12 @@ class Model
 
         // return result set's rows, if any
         if ( $results !== false ) {
-            return $statement->fetchAll( PDO::FETCH_ASSOC );
+            if ( $type == "SELECT" )
+                $rows = $statement->fetchAll( PDO::FETCH_ASSOC );
+            else
+                $rows = $statement->fetch( PDO::FETCH_NUM );
+
+            return $rows;
         }
         else {
             if ( $this->is_transaction )
@@ -110,7 +102,6 @@ class Model
             return false;
         }
     }
-    // get
 
     /**
      * @param  array $columns
