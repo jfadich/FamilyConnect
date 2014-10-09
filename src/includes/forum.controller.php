@@ -109,7 +109,7 @@ class ForumController
             $this->screen->add_fragment( "forum/topic", $this->topic );
 
         $posts = $this->forum->get_posts( $this->topic[ "topic_id" ], $this->page );
-
+        $this->screen->add_meta( "nextPage", $this->page + 1 );
         if ( $posts == false ) {
             $this->screen->add_fragment( "TEXT", "There doesn't seem to be anything here " );
             // TODO Display reply form

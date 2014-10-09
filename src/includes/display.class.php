@@ -89,28 +89,13 @@ class Display implements OutputHandler
             trigger_error( 'Failed to add element to cache. Unspecified $elementName ', E_USER_NOTICE );
         }
         else {
-            if ( $this->response_type == "JSON" ) {
-                $this->template_fragments[ ] = [$elementName => $data];
-            }
-            else {
-                $this->template_fragments[ ] = [$elementName, $data];
-            }
+            $this->template_fragments[ ] = [$elementName, $data];
         }
     }
 
     public function send_page($withTemplate = true)
     {
-        if ( $this->response_type == "JSON" )
-            $this->render_json();
-        else
-            $this->render_page( $withTemplate );
-    }
-
-    private function render_json()
-    {
-        header( "content-type:application/json" );
-        print( json_encode( $this->template_fragments ) );
-        exit;
+        $this->render_page( $withTemplate );
     }
 
     /**
@@ -164,13 +149,13 @@ class Display implements OutputHandler
                 }
             }
         }
-
         if ( $templateName == "TEXT" ) {
             print( "<p>" . $templateData . "</p>" );
         }
         else if ( $templateName == "HTML" ) {
             print( $templateData );
         }
+
         else if ( file_exists( ROOT . "/view/$templateName.php" ) ) {
             extract( $data ); // extract variables into local scope
             include( ROOT . "/view/$templateName.php" );
@@ -178,6 +163,7 @@ class Display implements OutputHandler
         else {
             trigger_error( "Missing template file: $templateName", E_USER_WARNING );
         }
+
     }
 
     public function add_side_link($name, $link)
