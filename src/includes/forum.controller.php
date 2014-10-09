@@ -14,9 +14,9 @@ class ForumController
 
     private $forum;
 
-    private $category;
+    private $category = false;
 
-    private $topic;
+    private $topic = false;
 
     private $page = 1;
 
@@ -81,9 +81,10 @@ class ForumController
     private function list_topics()
     {
         global $settings;
-        $categories = $this->forum->get_categories();
-        $cat_slug   = "";
-        $title      = 'All Discussions';
+        if ( $this->category == false )
+            $title = 'All Discussions';
+        else
+            $title = $this->category[ "cat_name" ];
 
         $topics = $this->forum->get_topics( $this->category[ "cat_id" ] );
         if ( $topics == false ) {
@@ -92,13 +93,11 @@ class ForumController
         }
 
         foreach ( $topics as &$topic ) {
-            foreach ( $categories as $key => $item )
-                if ( $item[ "cat_id" ] === $topic[ "topic_cat" ] ) $cat_slug = $item[ "cat_slug" ];
 
-            $topic[ "topic_link" ] = SITEURL . "/forum/" . $cat_slug . "/" . $topic[ "topic_slug" ];
+            $topic[ "topic_link" ] = SITEURL . "/forum/" . $topic[ "cat_slug" ] . "/" . $topic[ "topic_slug" ];
             $topic[ "created_on" ] = date( $settings[ "dateFormat" ], strtotime( $topic[ "created_on" ] ) );
         }
-
+        $this->screen->add_meta( "title", $title );
         $this->screen->add_fragment( "forum/topic-list", ["topics" => $topics, "title" => $title] );
     }
 
@@ -110,6 +109,7 @@ class ForumController
 
         $posts = $this->forum->get_posts( $this->topic[ "topic_id" ], $this->page );
         $this->screen->add_meta( "nextPage", $this->page + 1 );
+        $this->screen->add_meta( "title", $this->topic[ "topic_title" ] );
         if ( $posts == false ) {
             $this->screen->add_fragment( "TEXT", "There doesn't seem to be anything here " );
             // TODO Display reply form

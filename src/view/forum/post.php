@@ -11,6 +11,6 @@
         <?= $post_content; ?>
     </div>
     <div class="panel-footer">
-        <small>Posted by <?= $posted_by; ?> on <?= $posted_on; ?></small>
+        <small>Posted by <?= $nice_name; ?> on <?= $posted_on; ?></small>
     </div>
 </div>

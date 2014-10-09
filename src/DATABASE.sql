@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 08, 2014 at 06:27 AM
+-- Generation Time: Oct 09, 2014 at 10:56 AM
 -- Server version: 5.5.38
 -- PHP Version: 5.4.4-14+deb7u5
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `forum_posts` (
   PRIMARY KEY (`post_id`),
   KEY `post_topic` (`post_topic`),
   KEY `posted_by` (`posted_by`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=63 ;
 
 -- --------------------------------------------------------
 
@@ -111,6 +111,7 @@ CREATE TABLE IF NOT EXISTS `user_meta` (
   `user_id` int(10) unsigned NOT NULL,
   `first_name` varchar(50) DEFAULT NULL,
   `last_name` varchar(50) DEFAULT NULL,
+  `nice_name` varchar(50) NOT NULL,
   `phone_number` varchar(12) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

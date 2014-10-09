@@ -14,6 +14,8 @@ Class Forum extends Model
 
     private $post_table = "forum_posts";
 
+    private $user_table = "user_meta";
+
     function _construct()
     {
         parent::__construct();
@@ -37,16 +39,24 @@ Class Forum extends Model
 
     public function get_topics($id = '', $page = 1)
     {
+        $this->set_page( $page );
         if ( is_numeric( $id ) )
             $searchColumn = "topic_cat";
         else
             $searchColumn = "topic_slug";
 
         if ( !empty( $id ) ) {
-            $result = $this->query( "SELECT * FROM $this->topic_table WHERE $searchColumn = ? ", $id );
+            $result = $this->query( "SELECT topic_id,topic_title,topic_content,topic_slug,topic_cat,created_on,nice_name,cat_name,cat_slug
+                                     FROM $this->topic_table
+                                     INNER JOIN $this->user_table ON created_by = user_id
+                                     INNER JOIN $this->category_table ON topic_cat = cat_id
+                                     WHERE $searchColumn = ? ", $id );
         }
         else
-            $result = $this->query( "SELECT * FROM $this->topic_table" );
+            $result = $this->query( "SELECT topic_id,topic_title,topic_content,topic_slug,topic_cat,created_on,nice_name,cat_name,cat_slug
+                                     FROM $this->topic_table
+                                     INNER JOIN $this->user_table ON created_by = user_id
+                                     INNER JOIN $this->category_table ON topic_cat = cat_id" );
 
         return $result;
     }
@@ -55,18 +65,18 @@ Class Forum extends Model
     {
         $this->set_page( $page );
         if ( !empty( $topic_id ) ) {
-            $result = $this->query( "SELECT * FROM $this->post_table WHERE post_topic = ? ", $topic_id );
+            $result = $this->query( "SELECT post_content,
+                                     posted_on,
+                                     nice_name
+                                     FROM $this->post_table
+                                     INNER JOIN $this->user_table ON posted_by = user_id WHERE post_topic = ? ", $topic_id );
         }
         else
-            $result = $this->query( "SELECT * FROM $this->post_table" );
+            $result = $this->query( "SELECT post_content,
+                                     posted_on,
+                                     nice_name
+                                     FROM $this->post_table" );
 
         return $result;
     }
-    // get post
-
-    // get forumInfo
-
-    // get forumContents
-
-    //
 }
