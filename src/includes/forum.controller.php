@@ -27,20 +27,25 @@ class ForumController
 
         $this->forum = new Forum();
 
-        if ( isset( $args[ 1 ] ) ) {
+        if ( isset( $args[ 1 ] ) && !empty( $args[ 1 ] ) ) {
             $this->category = $this->forum->get_categories( $args[ 1 ] );
             if ( $this->category == false )
                 $this->screen->send_404();
 
-            if ( isset( $args[ 2 ] ) ) {
+            if ( isset( $args[ 2 ] ) && !empty( $args[ 2 ] ) ) {
 
-                if ( isset( $args[ 3 ] ) && is_numeric( $args[ 3 ] ) )
-                    $this->page = $args[ 3 ];
+                if ( isset( $args[ 3 ] ) && !empty( $args[ 3 ] ) )
+                    if ( is_numeric( $args[ 3 ] ) )
+                        $this->page = $args[ 3 ];
+                    else
+                        $this->screen->send_404();
 
-                $this->topic = $this->forum->get_topics( $args[ 2 ] )[ 0 ];
+                $this->topic = $this->forum->get_topics( $args[ 2 ] );
 
                 if ( $this->topic == false )
                     $this->screen->send_404();
+                else
+                    $this->topic = $this->topic[ 0 ];
 
                 $this->list_posts();
             }

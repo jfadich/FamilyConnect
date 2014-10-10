@@ -24,7 +24,17 @@ class Dispatcher
             $this->screen = new Display();
 
         if ( !empty( $mod[ "modArgs" ][ 0 ] ) && $mod[ "modArgs" ][ 0 ] == "login" ) { // TODO Refactor authorization
-            if ( isset( $_POST[ "email" ] ) ) {
+            if ( $this->auth->logged_in() ) {
+                if ( isset( $_SESSION[ "loginRedirect" ] ) ) {
+                    $location = $_SESSION[ "loginRedirect" ];
+                    unset ( $_SESSION[ "loginRedirect" ] );
+                }
+                else
+                    $location = SITEURL;
+
+                header( "Location:" . $location );
+            }
+            elseif ( isset( $_POST[ "email" ] ) ) {
                 $status = $this->auth->login( $_POST[ "email" ], $_POST[ "password" ], isset( $_POST[ "remember-me" ] ) ); // Error Returns 1 => user not found, 2 => user not verified, 3 => wrong password
 
                 if ( $status == 1 || $status == 3 ) {
@@ -150,7 +160,7 @@ class Dispatcher
      *
      * @param $modData an object created by parse_uri
      */
-    private function load_mod($modData) // TODO design decision load file or class?
+    private function load_mod($modData)
     {
         $modName = $modData[ "modName" ];
         $modArgs = $modData[ "modArgs" ]; // Module file will have access to this information
