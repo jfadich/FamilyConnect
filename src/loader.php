@@ -5,8 +5,8 @@
  *  Sets Constants, loads configuration details, initializes core components
  */
 
-require( "config.php" );
-require( "includes/functions.php" );
+require_once( "config.php" );
+require_once( "includes/functions.php" );
 
 define( 'ROOT', __DIR__ );
 
